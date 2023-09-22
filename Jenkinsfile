@@ -96,9 +96,7 @@ pipeline {
                 sh 'docker rmi -f ${IMAGE}'
             }
         }
-
-   
-
+        }
    
    
     }
