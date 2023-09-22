@@ -57,6 +57,7 @@ pipeline {
                 //sh 'docker logout'
             }
         }
+        }
           stage('Remove Container') {
             steps {
                 script {
@@ -101,4 +102,4 @@ pipeline {
    
    
     }
-  }
+  
