@@ -2,18 +2,18 @@ pipeline {
     agent any
     
     environment{
-        IMAGE="leonelfeukouo/talys_app:v_${env.BUILD_NUMBER}"
-        DOCKERHUB_CREDENTIALS = credentials('LeonelDockerHub')
+        IMAGE="haydevops/app_java:v_${env.BUILD_NUMBER}"
+       // DOCKERHUB_CREDENTIALS = credentials('LeonelDockerHub')
     }
     
     tools {
-      maven 'maven'
+      maven 'mvn'
   }
   
     stages {
         stage('CLONE avec Git') {
             steps {
-                git branch:'main', url:'https://github.com/LeonelFeukouo/Gestion_java.git'
+                git branch:'master', url:'https://github.com/Haykelyazidi/Gestion_java.git'
             }
         }
 
@@ -39,36 +39,27 @@ pipeline {
         //  }
         // }
     
-        // stage('RELEASE avec Dockerfile') {
-        //     steps {
-        //         sh 'docker build -t ${IMAGE} .'
-        //     }
-        // }
-
-         stage('Build') {
+         stage('RELEASE avec Dockerfile') {
             steps {
-                // Étapes pour la construction de votre application ou conteneur
-                
-                // Exemple de construction de l'image Docker
-                script {
-                    def dockerImage = docker.build("${IMAGE}")
-                }
-                
-                // Autres étapes de construction, si nécessaire
+                sh 'docker build -t ${IMAGE} .'
             }
-        }
+         }
+
+         
         
         stage('Push Image') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                withCredentials([string(credentialsId: 'docker_hub', variable: 'DOCKER_CREDENTIALS')]) {
+                sh "echo $DOCKER_CREDENTIALS | docker login -u haydevops --password-stdin"
+                //sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh 'docker push ${IMAGE}'
-                sh 'docker logout'
+                //sh 'docker logout'
             }
         }
         stage('Remove Container') {
             steps {
                 script {
-                    def containerName = 'app' // Remplacez par le nom de votre conteneur
+                    def containerName = 'haykel_java' // Remplacez par le nom de votre conteneur
                     
                     def containerId = sh(script: "docker ps -aq -f name=${containerName}", returnStdout: true).trim()
                     if (containerId) {
@@ -76,29 +67,29 @@ pipeline {
                         echo "Container '${containerName}' has been removed."
                     } else {
                         echo "No container found with the name '${containerName}'."
-                        sh 'docker run -d --name app -p 8081:8080 ${IMAGE}'
+                       // sh 'docker run -d --name haykel_java -p 8050:8080 ${IMAGE}'
                     }
                 }
             }
         }
         
-        // stage('DEPLOYMENT: Lancement du conteneur') {
-        //     steps {
-        //         script {
-        //             def containerId = sh(returnStdout: true, script: "docker ps -q -f name=app").trim()
-        //             if (containerId) {
-        //                 echo "Ancien conteneur détecté : $containerId"
-        //                 sh "docker kill $containerId"
-        //                 sh "docker rm $containerId"
-        //                 sh 'docker run -d --name app -p 8081:8080 ${IMAGE}'
-        //             } else {
-        //                 echo "Aucun ancien conteneur trouvé"
-        //                 sh 'docker run -d --name app -p 8081:8080 ${IMAGE}'
-        //             }
-        //         }
+         stage('DEPLOYMENT: Lancement du conteneur') {
+            steps {
+                 script {
+                     def containerId = sh(returnStdout: true, script: "docker ps -q -f name=haykel_java").trim()
+                     if (containerId) {
+                         echo "Ancien conteneur détecté : $containerId"
+                         sh "docker kill $containerId"
+                         sh "docker rm $containerId"
+                         sh 'docker run -d --name app -p 8050:8080 ${IMAGE}'
+                     } else {
+                         echo "Aucun ancien conteneur trouvé"
+                         sh 'docker run -d --name app -p 8050:8080 ${IMAGE}'
+                     }
+                 }
                 
-        //     }
-        // }
+             }
+         }
         
         stage('Suppression de l\'image') {
             steps {
