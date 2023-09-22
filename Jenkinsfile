@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     
@@ -47,7 +48,7 @@ pipeline {
 
          
         
-        stage('Push Image') {
+         stage('Push Image') {
             steps {
                 withCredentials([string(credentialsId: 'docker_hub', variable: 'DOCKER_CREDENTIALS')]) {
                 sh "echo $DOCKER_CREDENTIALS | docker login -u haydevops --password-stdin"
@@ -56,7 +57,7 @@ pipeline {
                 //sh 'docker logout'
             }
         }
-        stage('Remove Container') {
+          stage('Remove Container') {
             steps {
                 script {
                     def containerName = 'haykel_java' // Remplacez par le nom de votre conteneur
@@ -91,7 +92,7 @@ pipeline {
              }
          }
         
-        stage('Suppression de l\'image') {
+         stage('Suppression de l\'image') {
             steps {
                 sh 'docker rmi -f ${IMAGE}'
             }
