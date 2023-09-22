@@ -40,11 +40,25 @@ pipeline {
         //  }
         // }
     
-         stage('RELEASE avec Dockerfile') {
+       //  stage('RELEASE avec Dockerfile') {
+       //     steps {
+        //        sh 'docker build -t ${IMAGE} .'
+         //   }
+        // }
+
+        stage('Build') {
             steps {
-                sh 'docker build -t ${IMAGE} .'
+                // Étapes pour la construction de votre application ou conteneur
+                
+                // Exemple de construction de l'image Docker
+                script {
+                    def dockerImage = docker.build("${IMAGE}")
+                }
+                
+                // Autres étapes de construction, si nécessaire
             }
-         }
+        }
+        
 
          
         
