@@ -86,10 +86,10 @@ pipeline {
                          echo "Ancien conteneur détecté : $containerId"
                          sh "docker kill $containerId"
                          sh "docker rm $containerId"
-                         sh 'docker run -d --name app -p 8050:8080 ${IMAGE}'
+                         sh 'docker run -d --name haykel_java -p 8050:8080 ${IMAGE}'
                      } else {
                          echo "Aucun ancien conteneur trouvé"
-                         sh 'docker run -d --name app -p 8050:8080 ${IMAGE}'
+                         sh 'docker run -d --name haykel_java -p 8050:8080 ${IMAGE}'
                      }
                  }
                 
