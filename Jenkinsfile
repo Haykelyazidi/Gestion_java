@@ -61,7 +61,7 @@ pipeline {
             }
         }
         }
-          stage('Remove Container') {
+          stage('Remove Container If Exist') {
             steps {
                 script {
                     def containerName = 'haykel_java' // Remplacez par le nom de votre conteneur
@@ -78,23 +78,23 @@ pipeline {
             }
         }
         
-         stage('DEPLOYMENT: Lancement du conteneur') {
-            steps {
-                 script {
-                     def containerId = sh(returnStdout: true, script: "docker ps -q -f name=haykel_java").trim()
-                     if (containerId) {
-                         echo "Ancien conteneur détecté : $containerId"
-                         sh "docker kill $containerId"
-                         sh "docker rm $containerId"
-                         sh 'docker run -d --name haykel_java -p 8050:8080 ${IMAGE}'
-                     } else {
-                         echo "Aucun ancien conteneur trouvé"
-                         sh 'docker run -d --name haykel_java -p 8050:8080 ${IMAGE}'
-                     }
-                 }
+       //  stage('DEPLOYMENT: Lancement du conteneur') {
+        //    steps {
+         //        script {
+         //            def containerId = sh(returnStdout: true, script: "docker ps -q -f name=haykel_java").trim()
+          //           if (containerId) {
+          //               echo "Ancien conteneur détecté : $containerId"
+          //               sh "docker kill $containerId"
+          //               sh "docker rm $containerId"
+          //               sh 'docker run -d --name haykel_java -p 8050:8080 ${IMAGE}'
+          //           } else {
+          //               echo "Aucun ancien conteneur trouvé"
+         //                sh 'docker run -d --name haykel_java -p 8050:8080 ${IMAGE}'
+         //            }
+         //        }
                 
-             }
-         }
+         //    }
+       // }
         
          stage('Suppression de l\'image') {
             steps {
